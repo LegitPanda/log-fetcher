@@ -6,7 +6,8 @@
     "dev": "NODE_OPTIONS='--inspect' next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "test": "tsx test/unit/runAll.ts"
   },
   "dependencies": {
     "react": "^18",
@@ -17,6 +18,7 @@
     "typescript": "^5",
     "@types/node": "^20",
     "@types/react": "^18",
-    "@types/react-dom": "^18"
+    "@types/react-dom": "^18",
+    "tsx": "4.15.1"
   }
 }

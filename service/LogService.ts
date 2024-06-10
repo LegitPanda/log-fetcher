@@ -80,6 +80,12 @@ export class LogService {
 
 			// add the lines read in reverse order, skipping the first one which is the incomplete line
 			for (let i = readLines.length - 1; i > 0; i--) {
+
+				// skip first empty line
+				if (contents.length === 0 && readLines[i] === '') {
+					continue;
+				} 
+
 				if (searchText && readLines[i].includes(searchText)) {
 					contents.push(readLines[i]);
 				} else if (!searchText) {

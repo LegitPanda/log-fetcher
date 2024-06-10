@@ -3,8 +3,9 @@ Made with NextJs, this is a simple web server utility to check logs under `/var/
 Written with efficiency in mind, this simple tool can quickly access the most recent lines of large logs with little latency by streaming only the parts requested.
 
 ## Getting Started
+First, run `npm i` to install all dependencies
 
-First, run the development server:
+To run the development server:
 
 ```bash
 npm run dev
@@ -57,4 +58,4 @@ Logs are not always directly under `/var/log`, so the route supports logs in dee
 ## Tests
 Currently there is no testing framework so the text appears out of order. However, this command will run all unit tests:
 
-`npx tsx test/unit/runAll.ts` 
+`npm run test` 
