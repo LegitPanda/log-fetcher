@@ -58,34 +58,33 @@ export class LogService {
 			if (start === 0) {
 				done = true;
 			}
+			let readLines = [];
 			try {
 				const fileStream = fs.createReadStream(logPath, { start, end });
-
-				let readLines = [];
 
 				for await (const chunk of fileStream) {
 					readLines.push(chunk.toString());
 				}
-
-				readLines = readLines.join("").split(this.options.lineBreak);
-
-				// append the previous partial line to the end of our lines we just read
-				readLines[readLines.length - 1] =
-					`${readLines[readLines.length - 1]}${incompleteLine}`;
-
-				// the beginning of each new chunk is where our partial line is going to be
-				incompleteLine = readLines[0];
-
-				// add the lines read in reverse order, skipping the first one which is the incomplete line
-				for (let i = readLines.length - 1; i > 0; i--) {
-					if (searchText && readLines[i].includes(searchText)) {
-						contents.push(readLines[i]);
-					} else if (!searchText) {
-						contents.push(readLines[i]);
-					}
-				}
 			} catch (error: any) {
 				throw new Error(`Error while reading file stream: ${error?.message}`);
+			}
+
+			readLines = readLines.join("").split(this.options.lineBreak);
+
+			// append the previous partial line to the end of our lines we just read
+			readLines[readLines.length - 1] =
+				`${readLines[readLines.length - 1]}${incompleteLine}`;
+
+			// the beginning of each new chunk is where our partial line is going to be
+			incompleteLine = readLines[0];
+
+			// add the lines read in reverse order, skipping the first one which is the incomplete line
+			for (let i = readLines.length - 1; i > 0; i--) {
+				if (searchText && readLines[i].includes(searchText)) {
+					contents.push(readLines[i]);
+				} else if (!searchText) {
+					contents.push(readLines[i]);
+				}
 			}
 
 			start = Math.max(start - this.options.chunkSize - 1, 0); // - 1 because start and end are inclusive
