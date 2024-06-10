@@ -18,7 +18,7 @@ export const readLinesReversed = async (
 		lines.length = Math.min(lines.length, requestedLines);
 	}
 	console.log(
-		`[NAIVE] Finished reading ${requestedLines} lines for ${path} in ${endTime.getTime() - startTime.getTime()} ms`,
+		`[NAIVE] Finished reading ${requestedLines ?? "all"} lines for ${path} in ${endTime.getTime() - startTime.getTime()} ms`,
 	);
 	return lines;
 };

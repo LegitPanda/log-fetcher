@@ -20,7 +20,11 @@ export class LogService {
 		};
 	}
 
-	public async getLog(pathname: string, requestedLines: number) {
+	public async getLog(
+		pathname: string,
+		requestedLines: number,
+		searchText?: string,
+	) {
 		const logPath = path.join(
 			this.options.baseDir,
 			pathname.replace("/log", ""),
@@ -33,6 +37,15 @@ export class LogService {
 			throw new Error(`Error reading file ${logPath}: ${error?.message!}`);
 		}
 		// console.log({ logName: logPath, searchParams });
+
+		let tempChunkSize: number | undefined;
+
+		// easy fix for weird edge cases where chunk size is smaller than search text length
+		if (searchText && this.options.chunkSize < 2 * searchText.length) {
+			tempChunkSize = this.options.chunkSize;
+			this.options.chunkSize = 2 * searchText.length;
+		}
+
 		const contents = [""];
 
 		let start = Math.max(fsStat.size - 1 - this.options.chunkSize, 0);
@@ -66,6 +79,15 @@ export class LogService {
 				// add the lines read in reverse order, skipping the one we just appended
 				for (let i = readLines.length - 2; i >= 0; i--) {
 					contents.push(readLines[i]);
+
+					// if searching and if no keywords were matched, then remove the result
+					// we always do operation on the second last one because the last isn't finalized yet
+					if (
+						searchText &&
+						!contents[contents.length - 2].includes(searchText)
+					) {
+						contents.splice(contents.length - 2, 1);
+					}
 				}
 			} catch (error) {
 				throw new Error(`Error while reading file stream: ${error?.message!}`);
@@ -76,11 +98,20 @@ export class LogService {
 		}
 
 		// get rid of extra lines, we can have multiple extras if chunk is too big
-		while (contents.length > requestedLines) {
+		// also do one more check for searchText, since it is finalized here
+		while (
+			contents.length > requestedLines ||
+			(searchText && !contents[contents.length - 1].includes(searchText))
+		) {
 			contents.pop();
 		}
 
 		const endTime = new Date();
+
+		// reset chunk size back
+		if (tempChunkSize) {
+			this.options.chunkSize = tempChunkSize;
+		}
 
 		console.log(
 			`Finished reading ${requestedLines} lines for ${pathname} with chunk size ${this.options.chunkSize} in ${endTime.getTime() - startTime.getTime()} ms`,
