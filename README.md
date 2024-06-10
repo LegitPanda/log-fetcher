@@ -16,7 +16,7 @@ pnpm dev
 bun dev
 ```
 
-## 
+## Using the service
 To view logs, go to http://localhost:3000/log/[log-name]
 
 for example, if the log is located at `/var/log/auth.log` then the address is `http://localhost:3000/log/auth.log`
@@ -29,3 +29,32 @@ The output is ordered by most recent/last line appended:
     "Jun 10 00:00:01 Event 1"
 ]
 ```
+## Query parameters
+The route also accepts `lines` and `search` query parameters, where `lines` is the maximum number of results to return, and `search` is the specifier to filter out results without it:
+
+
+```
+// event.log:
+the cat ate the bat
+bat
+cat1
+```
+
+`http://localhost:3000/log/event.log?lines=5&search=cat`
+
+```json
+[
+    "cat1",
+    "the cat ate the bat"
+]
+```
+
+## Nesting 
+Logs are not always directly under `/var/log`, so the route supports logs in deeper directories:
+
+`http://localhost:3000/log/1/2/3/secret.log`
+
+## Tests
+Currently there is no testing framework so the text appears out of order. However, this command will run all unit tests:
+
+`npx tsx test/unit/runAll.ts` 
