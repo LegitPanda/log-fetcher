@@ -18,7 +18,7 @@ export async function GET(request: NextRequest) {
 	try {
 		const contents = await new LogService().getLog(pathname, lines, search);
 		return Response.json(contents);
-	} catch (error) {
+	} catch (error: any) {
 		console.log({ error });
 		return Response.json(
 			{ error: { message: error?.message, stack: error?.stack } },
