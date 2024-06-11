@@ -1,95 +1,68 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+"use client";
+import { useState } from "react";
 
 export default function Home() {
-  return (
-    <main className={styles.main}>
-      <div className={styles.description}>
-        <p>
-          Get started by editing&nbsp;
-          <code className={styles.code}>app/page.tsx</code>
-        </p>
-        <div>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{" "}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
-        </div>
-      </div>
+	const [logs, setLogs] = useState([]);
+	const [error, setError] = useState("");
 
-      <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
+	const fetchLogs = async (file: string, lines?: number, search?: string) => {
+		const response = await fetch(
+			`log/${file}?lines=${lines || 100}&search=${search}`,
+		);
 
-      <div className={styles.grid}>
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Docs <span>-&gt;</span>
-          </h2>
-          <p>Find in-depth information about Next.js features and API.</p>
-        </a>
+		const data = await response.json();
+		console.log({ data });
+		if (response.ok) {
+			setLogs(data);
+			setError("");
+		} else {
+			setError(data?.error?.message ?? "Error");
+		}
+	};
 
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Learn <span>-&gt;</span>
-          </h2>
-          <p>Learn about Next.js in an interactive course with&nbsp;quizzes!</p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Templates <span>-&gt;</span>
-          </h2>
-          <p>Explore starter templates for Next.js.</p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Deploy <span>-&gt;</span>
-          </h2>
-          <p>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
-  );
+	console.log({ logs });
+	return (
+		<main className="container">
+			<h1>Log fetcher</h1>
+			<b>
+				<div>Fetch logs from /var/log</div>
+			</b>
+			<form
+				onSubmit={(e) => {
+					e.preventDefault();
+					fetchLogs(
+						e.target?.file?.value,
+						e.target?.lines?.value,
+						e.target?.search?.value,
+					);
+				}}
+				aria-invalid={error !== ""}
+			>
+				<fieldset className="grid">
+					<label>
+						<p>File name</p>
+						<input name="file" id="file" />
+					</label>
+					<label>
+						<p>Lines to fetch</p>
+						<input name="lines" id="lines" />
+					</label>
+					<label>
+						<p>Must have keyword:</p>
+						<input name="search" />
+					</label>
+					<button type="submit">Search</button>
+				</fieldset>
+			</form>
+			<small>{error}</small>
+			{logs.length > 0 && (
+				<code>
+					{logs.map((log, i) => (
+						<div key={`log-${i}`}>{log}</div>
+					))}
+				</code>
+			)}
+			{logs.length === 0 && <div>Log is empty!</div>}
+		</main>
+	);
 }

@@ -16,11 +16,16 @@ pnpm dev
 # or
 bun dev
 ```
+## UI
+The default UI is hosted at http://localhost:3000
 
-## Using the service
-To view logs, go to http://localhost:3000/log/[log-name]
+## Using the api
+Everything uses GET by default
 
-for example, if the log is located at `/var/log/auth.log` then the address is `http://localhost:3000/log/auth.log`
+To view a log, the request is `GET /log/[log-name]`
+
+
+for example, if the log is located at `/var/log/auth.log` then the address is GET `http://localhost:3000/log/auth.log`
 
 The output is ordered by most recent/last line appended:
 
