@@ -43,7 +43,7 @@ export class LogService {
 		const contents = [];
 
 		let start = Math.max(fsStat.size - 1 - this.options.chunkSize, 0);
-		let end = fsStat.size - 1;
+		let end = Math.max(fsStat.size - 1, 0);
 
 		const startTime = new Date();
 
@@ -80,11 +80,10 @@ export class LogService {
 
 			// add the lines read in reverse order, skipping the first one which is the incomplete line
 			for (let i = readLines.length - 1; i > 0; i--) {
-
 				// skip first empty line
-				if (contents.length === 0 && readLines[i] === '') {
+				if (contents.length === 0 && readLines[i] === "") {
 					continue;
-				} 
+				}
 
 				if (searchText && readLines[i].includes(searchText)) {
 					contents.push(readLines[i]);
@@ -100,9 +99,9 @@ export class LogService {
 		// if there's not enough results then we must have finished reading through the entire file
 		// and should add the last chunk back into the results
 		if (contents.length < requestedLines) {
-			if (searchText && incompleteLine.includes(searchText)) {
+			if (searchText && incompleteLine.includes(searchText) && incompleteLine) {
 				contents.push(incompleteLine);
-			} else if (!searchText) {
+			} else if (!searchText && incompleteLine) {
 				contents.push(incompleteLine);
 			}
 		}

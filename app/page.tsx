@@ -17,6 +17,7 @@ export default function Home() {
 			setError("");
 		} else {
 			setError(data?.error?.message ?? "Error");
+			setLogs([]);
 		}
 	};
 
@@ -28,7 +29,7 @@ export default function Home() {
 				<div>Fetch logs from /var/log</div>
 			</b>
 			<form
-				onSubmit={(e) => {
+				onSubmit={(e: any) => {
 					e.preventDefault();
 					fetchLogs(
 						e.target?.file?.value,

@@ -9,17 +9,16 @@ const logService = new LogService({
 console.log(`Running test: ${__filename}...`);
 
 (async () => {
-	
 	assert.deepEqual(
 		await logService.getLog("small.log", 100),
 		await readLinesReversed(`${__dirname}/../resources/small.log`),
 	);
-	
+
 	assert.deepEqual(
 		await logService.getLog("large.log", 1),
 		await readLinesReversed(`${__dirname}/../resources/large.log`, 1),
 	);
-	
+
 	assert.deepEqual(await logService.getLog("small.log", 5, "def"), ["def"]);
 	assert.deepEqual(
 		await logService.getLog("large.log", 5, "0000000000000000"),
@@ -31,4 +30,16 @@ console.log(`Running test: ${__filename}...`);
 			"Jun 10 01:17:25 DESKTOP-QEHGMK8 kernel: [ 3730.149251] RAX: fffffffffffffffc RBX: 0000000000000000 RCX: 00007f423fef0b68",
 		],
 	);
+
+	assert.deepEqual(
+		await logService.getLog("spaces.log", 5),
+		await readLinesReversed(`${__dirname}/../resources/spaces.log`, 5),
+	);
+
+	assert.deepEqual(
+		await logService.getLog("spaces.log", 100),
+		await readLinesReversed(`${__dirname}/../resources/spaces.log`, 8),
+	);
+
+	assert.deepEqual(await logService.getLog("empty.log", 100), []);
 })();
