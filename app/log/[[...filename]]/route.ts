@@ -4,13 +4,17 @@ import type { NextRequest } from "next/server";
 export async function GET(request: NextRequest) {
 	const { searchParams, pathname } = new URL(request.url);
 
-	const linesParam = searchParams.get("lines") ?? 10;
-	let lines: number;
-	try {
-		//@ts-expect-error default value does not need to be parsed as string
-		lines = Number.parseInt(linesParam || 100);
-	} catch {
-		throw new Error(`query parameter lines '${linesParam}' is not a number`);
+	const linesParam = searchParams.get("lines") ?? 100;
+	const lines = Number(linesParam);
+	if (Number.isNaN(lines)) {
+		return Response.json(
+			{
+				error: {
+					message: `query parameter lines '${linesParam}' is not a number`,
+				},
+			},
+			{ status: 400 },
+		);
 	}
 
 	const search = searchParams.get("search") ?? undefined;

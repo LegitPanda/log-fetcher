@@ -46,7 +46,7 @@ export default function Home() {
 					</label>
 					<label>
 						<p>Lines to fetch</p>
-						<input name="lines" id="lines" />
+						<input type="number" placeholder="100" name="lines" id="lines" />
 					</label>
 					<label>
 						<p>Must have keyword:</p>
